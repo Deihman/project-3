@@ -135,7 +135,11 @@ def parse():
     Text parser for Ajax input
     """
     text = request.args.get("text", type=str)
-    rslt = {"text": text}
+    if LetterBag(flask.session["jumble"]).contains(text) & text not in flask.session.get("matches", []):
+        flask.session["matches"].append(text)
+        rslt = {"add_to_list": True}
+    else:
+        rslt = {"add_to_list": False}
     return flask.jsonify(result=rslt)
 
 

@@ -81,18 +81,18 @@
                if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) { return }
 
                $.getJSON( "/_countem", { text: txt },
-                          function(data) {
-                            rsval = data.result.long_enough;
-                            console.log("rsval: " + rsval)
-                            if (rsval) {
-                               $("#response").html("That's enough!");
-                               $("#attempt").val("");
-                            } else {
-                               $("#response").append(txt.length + " ");
-                            }
-                            showTiles(txt);
-                           }
-                       );
+                     function(data) {
+                        rsval = data.result.long_enough;
+                        console.log("rsval: " + rsval)
+                        if (rsval) {
+                           $("#response").html("That's enough!");
+                           $("#attempt").val("");
+                        } else {
+                           $("#response").append(txt.length + " ");
+                        }
+                        showTiles(txt);
+                     }
+                  );
                });
 
             // Demonstration of how we can insert graphical elements
