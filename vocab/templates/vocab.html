@@ -101,7 +101,7 @@
 
                if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) { return };
 
-               $.getJSON("/_InputParse", { text: txt },
+               $.getJSON("/_inputParse", { text: txt },
                   function(data)
                   {
                      inputData = data.result.text;
