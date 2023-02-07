@@ -77,10 +77,44 @@
                   <label for="attempt">Word:</label>
                   <input id="attempt" name="attempt" type="text" width="15"
                      autocomplete="off"  autofocus />
-                  <input type="submit" name="try" />
                </form>
             </div>
          </div>
+         <script>
+            $("#entry").submit( function(event) {
+               event.preventDefault();
+              });
+
+            $("#attempt").keyup(function(event) {
+               var txt = $("#attempt").val();  // Current content of the input field
+               var keycode = event.which;      // They key that just went up
+               var letter = String.fromCharCode(keycode);
+
+               console.log("attempt: " + txt); // keep track of what the server sees
+               console.log("attempt: new char " + letter)
+
+               // That letter might not be a letter ... it could be the
+               // the backspace key, or even the shift key, because 'keyup'
+               // catches all kinds of keys.  (Also, the difference between
+               // upper and lower case comes from state of shift key + key code,
+               // so ignoring the shift key we get only the upper case letters.
+
+               if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) { return };
+
+               $.getJSON("/_InputParse", { text: txt },
+                  function(data)
+                  {
+                     inputData = data.result.text;
+                     console.log("input data: " + inputData);
+
+                     if (inputData in session.jumble) // assuming this even works!
+                     {
+                        session.matches.append(inputData);
+                        $("#attempt").val("");
+                     }
+                  })
+            });
+         </script>
          <br />
          {% if session.matches|length is not equalto 0  %}
          <h2>You found </h2>

@@ -128,13 +128,13 @@ def check():
 #   These return JSON, rather than rendering pages.
 ###############
 
-@app.route("/_example")
-def example():
+@app.route("/_inputParse")
+def parse():
     """
-    Example ajax request handler
+    Text parser for Ajax input
     """
-    app.logger.debug("Got a JSON request")
-    rslt = {"key": "value"}
+    text = request.args.get("text", type=str)
+    rslt = {"text": text}
     return flask.jsonify(result=rslt)
 
 
