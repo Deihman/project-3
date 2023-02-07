@@ -72,28 +72,24 @@ def keep_going():
 @app.route("/success")
 def success():
     return flask.render_template('success.html')
+    
 
+###############
+# AJAX request handlers
+#   These return JSON, rather than rendering pages.
+###############
 
-#######################
-# Form handler.
-#   You'll need to change this to a
-#   a JSON request handler
-#######################
-
-@app.route("/_check", methods=["POST"])
-def check():
+@app.route("/_inputParse")
+def parse():
     """
-    User has submitted the form with a word ('attempt')
-    that should be formed from the jumble and on the
-    vocabulary list.  We respond depending on whether
-    the word is on the vocab list (therefore correctly spelled),
-    made only from the jumble letters, and not a word they
-    already found.
+    Text parser and checker for Ajax input
     """
+
     app.logger.debug("Entering check")
+    rslt = {"continue": True, "reload": False, "err_message": ""}
 
     # The data we need, from form and from cookie
-    text = flask.request.form["attempt"]
+    text = request.args.get("text", type=str)
     jumble = flask.session["jumble"]
     matches = flask.session.get("matches", [])  # Default to empty list
 
@@ -106,40 +102,29 @@ def check():
         # Cool, they found a new word
         matches.append(text)
         flask.session["matches"] = matches
+        rslt["reload"] = True
     elif text in matches:
-        flask.flash("You already found {}".format(text))
+        #flask.flash("You already found {}".format(text))
+        rslt["reload"] = False
+        rslt["err_message"] = "You already found {}".format(text)
     elif not matched:
-        flask.flash("{} isn't in the list of words".format(text))
+        #flask.flash("{} isn't in the list of words".format(text))
+        rslt["reload"] = False
+        rslt["err_message"] = "{} isn't in the list of words".format(text)
     elif not in_jumble:
-        flask.flash(
-            '"{}" can\'t be made from the letters {}'.format(text, jumble))
+       # flask.flash('"{}" can\'t be made from the letters {}'.format(text, jumble))
+        rslt["reload"] = False
+        rslt["err_message"] = '"{}" can\'t be made from the letters {}'.format(text, jumble)
     else:
         app.logger.debug("This case shouldn't happen!")
         assert False  # Raises AssertionError
 
     # Choose page:  Solved enough, or keep going?
     if len(matches) >= flask.session["target_count"]:
-       return flask.redirect(flask.url_for("success"))
+        rslt["continue"] = False
     else:
-       return flask.redirect(flask.url_for("keep_going"))
-
-
-###############
-# AJAX request handlers
-#   These return JSON, rather than rendering pages.
-###############
-
-@app.route("/_inputParse")
-def parse():
-    """
-    Text parser for Ajax input
-    """
-    text = request.args.get("text", type=str)
-    if LetterBag(flask.session["jumble"]).contains(text) & text not in flask.session.get("matches", []):
-        flask.session["matches"].append(text)
-        rslt = {"add_to_list": True}
-    else:
-        rslt = {"add_to_list": False}
+        rslt["continue"] = True
+    
     return flask.jsonify(result=rslt)
 
 
