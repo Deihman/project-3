@@ -80,7 +80,7 @@
                </form>
             </div>
          </div>
-         <p id="error" style="color:red;"> </p>
+         <p id="error" style="color:red"> </p>
          <script>
             $("#entry").submit( function(event) {
                event.preventDefault();
@@ -88,8 +88,8 @@
 
             $("#attempt").keyup(function(event) {
                var txt = $("#attempt").val();  // Current content of the input field
-               //var keycode = event.which;      // They key that just went up
-               //var letter = String.fromCharCode(keycode);
+               var keycode = event.which;      // They key that just went up
+               var letter = String.fromCharCode(keycode);
 
                //console.log("attempt: " + txt); // keep track of what the server sees
                //console.log("attempt: new char " + letter)
