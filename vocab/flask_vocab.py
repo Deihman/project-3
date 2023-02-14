@@ -86,7 +86,7 @@ def parse():
     """
 
     app.logger.debug("Entering check")
-    rslt = {"continue": True, "reload": False, "err_message": ""}
+    rslt = {"continue": True, "match": "", "err_message": ""}
 
     # The data we need, from form and from cookie
     text = request.args.get("text", type=str)
@@ -102,18 +102,15 @@ def parse():
         # Cool, they found a new word
         matches.append(text)
         flask.session["matches"] = matches
-        rslt["reload"] = True
+        rslt["match"] = text
     elif text in matches:
         #flask.flash("You already found {}".format(text))
-        rslt["reload"] = False
         rslt["err_message"] = "You already found {}".format(text)
     elif not matched:
         #flask.flash("{} isn't in the list of words".format(text))
-        rslt["reload"] = False
         rslt["err_message"] = "{} isn't in the list of words".format(text)
     elif not in_jumble:
-       # flask.flash('"{}" can\'t be made from the letters {}'.format(text, jumble))
-        rslt["reload"] = False
+        #flask.flash('"{}" can\'t be made from the letters {}'.format(text, jumble))
         rslt["err_message"] = '"{}" can\'t be made from the letters {}'.format(text, jumble)
     else:
         app.logger.debug("This case shouldn't happen!")

@@ -82,6 +82,8 @@
          </div>
          <p id="error" style="color:red"> </p>
          <script>
+            var found = "";
+
             $("#entry").submit( function(event) {
                event.preventDefault();
               });
@@ -106,11 +108,11 @@
                   function(data)
                   {
                      cont = data.result.continue;
-                     reload = data.result.reload;
+                     match = data.result.match;
                      err_message = data.result.err_message;
 
                      //console.log("continue game: " + cont);
-                     //console.log("reload page: " + reload);
+                     console.log("match found: " + match);
                      //console.log("message: " + err_message);
 
                      if (! cont)
@@ -120,24 +122,28 @@
 
                      // add html element to modify it to match the error message
                      $("#error").html(err_message);
-
-                     if (reload)
+                     
+                     if (match.length > 0)
                      {
-                        window.open("/keep_going", "_self");
+                        console.log("match > 0: executing fun stuff")
+                        found = found + match;
+                        $("#resultHeader").html("You found ");
+                        $("#results").html(found);
                      }
+
+                     //if (reload)
+                     //{
+                     //   window.open("/keep_going", "_self");
+                     //}
                   }
                )
             });
          </script>
          <br />
-         {% if session.matches|length is not equalto 0  %}
-         <h2>You found </h2>
+         <h2 id="resultHeader"></h2>
          <p id="results">
-            {% for match in session.matches %}
-            {{ match }}
-            {% endfor %}
+            <!--intentionally blank, filled in by getJSON-->
          </p>
-         {% endif %}
          {% with messages = get_flashed_messages() %}
          {% if messages %}
          <!-- Mismatch, already found, etc. "flashed" from Python -->
